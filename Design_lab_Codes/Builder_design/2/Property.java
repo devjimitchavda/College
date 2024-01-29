@@ -14,7 +14,7 @@ public class Property {
         this.bedrooms = builder.bedrooms;
         this.bathrooms = builder.bathrooms;
     }
-    
+     
     public String getType() {
         return type;
     }
