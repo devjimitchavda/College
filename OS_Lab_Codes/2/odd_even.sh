@@ -1,7 +1,7 @@
-echo "Enter a number:"
+echo "enter a number:"
 read num
-if ((num % 2 == 0)); then
-    echo "$num is an even number"
+if ((num%2==0)); then
+    echo "even number"
 else
-    echo "$num is an odd number"
+    echo "odd number"
 fi

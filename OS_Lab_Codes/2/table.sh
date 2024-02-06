@@ -1,4 +1,4 @@
-echo "Enter a number:"
+echo "hello enter a number:"
 read num
 for ((i = 1; i < 11; i++)); do
     result=$((num * i))

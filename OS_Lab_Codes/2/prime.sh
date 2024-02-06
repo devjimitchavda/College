@@ -8,11 +8,11 @@ if [ $number -lt 2 ]; then
 fi
 
 while [ $i -lt $number ]; do
-    if [ $((number % i)) -eq 0 ]; then
+    if [ $(expr $number % $i) -eq 0 ]; then
         echo "$number is not a prime number."
         exit
     fi
-    i=$((i + 1))
+    i=$(expr $i + 1)
 done
 
 echo "$number is a prime number."
