@@ -1,7 +1,5 @@
-#!/bin/bash
-
-if [ "$#" -le 5 ]; then
-    echo "The number of command line arguments is less than or equal to 5."
+if [ $# -lt 5 ]; then
+    echo "number of arguments less than 5"
 else
-    echo "The number of command line arguments is greater than 5."
+    echo "number of entered arguments are greater than 5"
 fi

@@ -1,8 +1,7 @@
-#!/bin/bash
-max=$1
-for num in "$@"; do
-    if [[ $num -gt $max ]]; then
-        max=$num
+max=-999999
+for i in $@; do
+    if [ $i -gt $max ]; then
+        max=$i
     fi
 done
-echo "The maximum number is: $max"
+echo "maximum=$max"
