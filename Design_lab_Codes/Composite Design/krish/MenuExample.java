@@ -50,60 +50,62 @@ public class MenuExample {
         // Create main menu
         Menu mainMenu = new Menu("Main Menu");
 
-        // Create submenus
-        Menu fileMenu = new Menu("File");
-        Menu editMenu = new Menu("Edit");
-        Menu viewMenu = new Menu("View");
+        // Create submenus for starters, main meals, and desserts
+        Menu starterMenu = new Menu("Starters");
+        Menu mainMealMenu = new Menu("Main Meals");
+        Menu dessertMenu = new Menu("Desserts");
 
-        // Add submenus to the main menu
-        mainMenu.add(fileMenu);
-        mainMenu.add(editMenu);
-        mainMenu.add(viewMenu);
+        // Add starters, main meals, and desserts menus to the main menu
+        mainMenu.add(starterMenu);
+        mainMenu.add(mainMealMenu);
+        mainMenu.add(dessertMenu);
 
-        // Create menu items for the submenus
-        MenuItem newItem = new MenuItem("New");
-        MenuItem openItem = new MenuItem("Open");
-        MenuItem saveItem = new MenuItem("Save");
-        MenuItem exitItem = new MenuItem("Exit");
+        // Create menu items for starters
+        MenuItem saladItem = new MenuItem("Salad");
+        MenuItem soupItem = new MenuItem("Soup");
+        MenuItem breadItem = new MenuItem("Breadsticks");
 
-        MenuItem cutItem = new MenuItem("Cut");
-        MenuItem copyItem = new MenuItem("Copy");
-        MenuItem pasteItem = new MenuItem("Paste");
+        // Create menu items for main meals
+        MenuItem tacosItem = new MenuItem("Tacos");
+        MenuItem pastaItem = new MenuItem("Pasta");
+        MenuItem pizzaItem = new MenuItem("Pizza");
 
-        MenuItem zoomInItem = new MenuItem("Zoom In");
-        MenuItem zoomOutItem = new MenuItem("Zoom Out");
+        // Create menu items for desserts
+        MenuItem cakeItem = new MenuItem("Cake");
+        MenuItem iceCreamItem = new MenuItem("Ice Cream");
+        MenuItem fruitItem = new MenuItem("Fruit Salad");
 
         // Add menu items to the submenus
-        fileMenu.add(newItem);
-        fileMenu.add(openItem);
-        fileMenu.add(saveItem);
-        fileMenu.add(exitItem);
+        starterMenu.add(saladItem);
+        starterMenu.add(soupItem);
+        starterMenu.add(breadItem);
 
-        editMenu.add(cutItem);
-        editMenu.add(copyItem);
-        editMenu.add(pasteItem);
+        mainMealMenu.add(tacosItem);
+        mainMealMenu.add(pastaItem);
+        mainMealMenu.add(pizzaItem);
 
-        viewMenu.add(zoomInItem);
-        viewMenu.add(zoomOutItem);
+        dessertMenu.add(cakeItem);
+        dessertMenu.add(iceCreamItem);
+        dessertMenu.add(fruitItem);
 
         // Display the main menu
         mainMenu.display();
 
         // Simulate user interaction by selecting a submenu
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the submenu to display (File/Edit/View): ");
+        System.out.print("Enter the submenu to display (Starters/Main Meals/Desserts): ");
         String selectedMenu = scanner.nextLine().trim().toLowerCase();
 
         // Display the selected submenu
         switch (selectedMenu) {
-            case "file":
-                fileMenu.display();
+            case "starters":
+                starterMenu.display();
                 break;
-            case "edit":
-                editMenu.display();
+            case "main meals":
+                mainMealMenu.display();
                 break;
-            case "view":
-                viewMenu.display();
+            case "desserts":
+                dessertMenu.display();
                 break;
             default:
                 System.out.println("Invalid submenu selection.");
