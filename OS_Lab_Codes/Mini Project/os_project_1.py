@@ -1,156 +1,124 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem, QTextEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QTableWidget, QTableWidgetItem
 
 class Process:
-    def __init__(self, name, pid, priority, arrival_time, burst_time):
+    def __init__(self, name, burst_time, arrival_time, priority):
         self.name = name
-        self.pid = pid
-        self.priority = priority
-        self.arrival_time = arrival_time
         self.burst_time = burst_time
         self.remaining_time = burst_time
+        self.arrival_time = arrival_time
+        self.priority = priority
+        self.finish_time = 0
+        self.turnaround_time = 0
+        self.waiting_time = 0
 
-class SchedulerApp(QWidget):
+class Scheduler(QWidget):
     def __init__(self):
         super().__init__()
-        self.processes = []  # List to store the processes
-        self.job_queue = []  # List to store the job queue
-        self.init_ui()  # Initialize the user interface
-        
-    def init_ui(self):
-        self.setWindowTitle('Preemptive Scheduling')  # Set window title
-        layout = QVBoxLayout()  # Create vertical layout
 
-        # Labels and input fields for process details
-        self.name_label = QLabel("Process Name:")
-        self.name_entry = QLineEdit()
-        layout.addWidget(self.name_label)
-        layout.addWidget(self.name_entry)
+        self.processes = []
 
-        self.id_label = QLabel("Process ID:")
-        self.id_entry = QLineEdit()
-        layout.addWidget(self.id_label)
-        layout.addWidget(self.id_entry)
+        self.initUI()
 
-        self.priority_label = QLabel("Priority:")
-        self.priority_entry = QLineEdit()
+    def initUI(self):
+        self.setWindowTitle('Preemptive Priority Scheduling')
+        layout = QVBoxLayout()
+
+        self.process_name_label = QLabel('Process Name:')
+        self.process_name_input = QLineEdit()
+        self.burst_time_label = QLabel('Burst Time:')
+        self.burst_time_input = QLineEdit()
+        self.arrival_time_label = QLabel('Arrival Time:')
+        self.arrival_time_input = QLineEdit()
+        self.priority_label = QLabel('Priority (0-10):')
+        self.priority_input = QLineEdit()
+
+        add_button = QPushButton('Add Process')
+        add_button.clicked.connect(self.add_process)
+
+        self.output_button = QPushButton('Show Output')
+        self.output_button.clicked.connect(self.calculate_schedule)
+
+        layout.addWidget(self.process_name_label)
+        layout.addWidget(self.process_name_input)
+        layout.addWidget(self.burst_time_label)
+        layout.addWidget(self.burst_time_input)
+        layout.addWidget(self.arrival_time_label)
+        layout.addWidget(self.arrival_time_input)
         layout.addWidget(self.priority_label)
-        layout.addWidget(self.priority_entry)
+        layout.addWidget(self.priority_input)
+        layout.addWidget(add_button)
+        layout.addWidget(self.output_button)
 
-        self.arrival_label = QLabel("Arrival Time:")
-        self.arrival_entry = QLineEdit()
-        layout.addWidget(self.arrival_label)
-        layout.addWidget(self.arrival_entry)
-
-        self.burst_label = QLabel("Burst Time:")
-        self.burst_entry = QLineEdit()
-        layout.addWidget(self.burst_label)
-        layout.addWidget(self.burst_entry)
-
-        # Button to add process
-        self.add_button = QPushButton("Add Process")
-        self.add_button.clicked.connect(self.add_process)
-        layout.addWidget(self.add_button)
-
-        # Button to sort processes
-        self.sort_button = QPushButton("Sort Processes")
-        self.sort_button.clicked.connect(self.sort_processes)
-        layout.addWidget(self.sort_button)
-
-        # Button to show job queue
-        self.show_queue_button = QPushButton("Show Job Queue")
-        self.show_queue_button.clicked.connect(self.show_job_queue)
-        layout.addWidget(self.show_queue_button)
-
-        # Table to display processes
-        self.process_table = QTableWidget()
-        self.process_table.setColumnCount(7)
-        self.process_table.setHorizontalHeaderLabels(["Name", "ID", "Priority", "Arrival Time", "Burst Time", "Completion Time", "Waiting Time"])
-        layout.addWidget(self.process_table)
-
-        # Text edit to display job queue
-        self.job_queue_text = QTextEdit()
-        layout.addWidget(self.job_queue_text)
+        self.result_table = QTableWidget()
+        self.result_table.setColumnCount(8)
+        self.result_table.setHorizontalHeaderLabels(["Process Name", "Process ID", "Burst Time", "Arrival Time", "Priority", "Finish Time", "Turnaround Time", "Waiting Time"])
+        layout.addWidget(self.result_table)
 
         self.setLayout(layout)
 
     def add_process(self):
-        # Get process details from input fields
-        name = self.name_entry.text()
-        pid = int(self.id_entry.text())
-        priority = int(self.priority_entry.text())
-        arrival_time = int(self.arrival_entry.text())
-        burst_time = int(self.burst_entry.text())
-        
-        # Create Process object and append to processes list
-        process = Process(name, pid, priority, arrival_time, burst_time)
+        name = self.process_name_input.text()
+        burst_time = int(self.burst_time_input.text())
+        arrival_time = int(self.arrival_time_input.text())
+        priority = int(self.priority_input.text())
+
+        process = Process(name, burst_time, arrival_time, priority)
         self.processes.append(process)
-        
-        # Clear input fields
-        self.name_entry.clear()
-        self.id_entry.clear()
-        self.priority_entry.clear()
-        self.arrival_entry.clear()
-        self.burst_entry.clear()
-        
-    def sort_processes(self):
-        # Sort processes based on priority and arrival time
-        self.processes.sort(key=lambda x: (x.priority, x.arrival_time))
-        current_time = 0
-        for process in self.processes:
-            # Calculate completion time and waiting time
-            completion_time = min(current_time + process.remaining_time, current_time + process.burst_time)
-            waiting_time = current_time - process.arrival_time
-            if waiting_time < 0:
-                waiting_time = 0  # Set waiting time to 0 if negative
-            # Insert process details into process table
-            self.process_table.insertRow(self.process_table.rowCount())
-            self.process_table.setItem(self.process_table.rowCount() - 1, 0, QTableWidgetItem(process.name))
-            self.process_table.setItem(self.process_table.rowCount() - 1, 1, QTableWidgetItem(str(process.pid)))
-            self.process_table.setItem(self.process_table.rowCount() - 1, 2, QTableWidgetItem(str(process.priority)))
-            self.process_table.setItem(self.process_table.rowCount() - 1, 3, QTableWidgetItem(str(process.arrival_time)))
-            self.process_table.setItem(self.process_table.rowCount() - 1, 4, QTableWidgetItem(str(process.burst_time)))
-            self.process_table.setItem(self.process_table.rowCount() - 1, 5, QTableWidgetItem(str(completion_time)))
-            self.process_table.setItem(self.process_table.rowCount() - 1, 6, QTableWidgetItem(str(waiting_time)))
-            current_time = completion_time
 
-    def show_job_queue(self):
-        # Clear previous job queue
-        self.job_queue_text.clear()
-        # Initialize current time
-        current_time = 0
-        # Copy the list of processes
-        remaining_processes = list(self.processes)
-        # Iterate over remaining processes until all are processed
-        while remaining_processes:
-            # Find the next process to execute based on arrival time and priority
-            next_process = min(remaining_processes, key=lambda x: (x.arrival_time, x.priority))
-            # Remove the selected process from the list
-            remaining_processes.remove(next_process)
-            # Calculate the completion time for the process
-            completion_time = min(current_time + next_process.remaining_time, current_time + next_process.burst_time)
-            # Append the process details to the job queue
-            self.job_queue.append(f"{next_process.name} -> {current_time} - {completion_time}")
-            # Update the current time
-            current_time = completion_time
-        # Display the job queue in the text edit
-        self.job_queue_text.setPlainText("\n".join(self.job_queue))
+        self.update_table_row(len(self.processes) - 1)
 
-def main():
-    app = QApplication(sys.argv)
-    scheduler_app = SchedulerApp()
-    scheduler_app.show()
-    sys.exit(app.exec_())
+    def calculate_schedule(self):
+        self.processes.sort(key=lambda x: (x.arrival_time, x.priority))
+
+        current_time = 0
+        total_waiting_time = 0
+        total_turnaround_time = 0
+
+        self.result_table.setRowCount(len(self.processes))
+
+        for i, process in enumerate(self.processes):
+            if process.arrival_time > current_time:
+                current_time = process.arrival_time
+
+            min_priority = 11
+            min_index = -1
+
+            for j in range(i + 1):
+                if self.processes[j].arrival_time <= current_time and self.processes[j].remaining_time > 0:
+                    if self.processes[j].priority < min_priority:
+                        min_priority = self.processes[j].priority
+                        min_index = j
+
+            current_time += 1
+            self.processes[min_index].remaining_time -= 1
+
+            if self.processes[min_index].remaining_time == 0:
+                self.processes[min_index].finish_time = current_time
+                self.processes[min_index].turnaround_time = self.processes[min_index].finish_time - self.processes[min_index].arrival_time
+                self.processes[min_index].waiting_time = self.processes[min_index].turnaround_time - self.processes[min_index].burst_time
+                total_waiting_time += self.processes[min_index].waiting_time
+                total_turnaround_time += self.processes[min_index].turnaround_time
+
+            self.update_table_row(i)
+
+        avg_waiting_time = total_waiting_time / len(self.processes)
+        avg_turnaround_time = total_turnaround_time / len(self.processes)
+
+        self.result_table.setHorizontalHeaderLabels(["Process Name", "Process ID", "Burst Time", "Arrival Time", "Priority", "Finish Time", "Turnaround Time", "Waiting Time"])
+        self.result_table.setItem(len(self.processes), 6, QTableWidgetItem(f'{avg_turnaround_time:.2f}'))
+        self.result_table.setItem(len(self.processes), 7, QTableWidgetItem(f'{avg_waiting_time:.2f}'))
+
+    def update_table_row(self, row):
+        process = self.processes[row]
+        self.result_table.setItem(row, 0, QTableWidgetItem(process.name))
+        self.result_table.setItem(row, 1, QTableWidgetItem(str(row + 1)))
+        self.result_table.setItem(row, 2, QTableWidgetItem(str(process.burst_time)))
+        self.result_table.setItem(row, 3, QTableWidgetItem(str(process.arrival_time)))
+        self.result_table.setItem(row, 4, QTableWidgetItem(str(process.priority)))
 
 if __name__ == '__main__':
-    main()
-        
-
-"""
-test cases:
-Process Name: P1, Process ID: 1, Priority: 2, Arrival Time: 0, Burst Time: 5
-Process Name: P2, Process ID: 2, Priority: 1, Arrival Time: 1, Burst Time: 4
-Process Name: P3, Process ID: 3, Priority: 3, Arrival Time: 2, Burst Time: 3
-Process Name: P4, Process ID: 4, Priority: 2, Arrival Time: 3, Burst Time: 2
-Process Name: P5, Process ID: 5, Priority: 1, Arrival Time: 4, Burst Time: 1
-"""
+    app = QApplication(sys.argv)
+    scheduler = Scheduler()
+    scheduler.show()
+    sys.exit(app.exec_())

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priority Scheduling Simulator</title>
+    <style>
+        /* CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #233e8b;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        nav h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        form input {
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #233e8b;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        form button:hover {
+            background-color: #001d4a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #statistics {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #gantt-chart {
+            max-width: 60%;
+            margin: 20px auto;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            margin: auto;
+
+        }
+
+        .gantt-block-inner {
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            border: 1px solid #000;
+            padding: 2px 5px 2px 5px;
+            background-color: #233e8b;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .gantt-block-time {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .gantt-block-time-first {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <h1>Preemptive Priority Scheduling Simulator</h1>
+        </nav>
+    </header>
+
+    <div class="container">
+        <form id="process-form">
+            <label for="process-name">Process Name:</label>
+            <input type="text" id="process-name" required />
+
+            <label for="burst-time">Burst Time:</label>
+            <input type="number" id="burst-time" required />
+
+            <label for="arrival-time">Arrival Time:</label>
+            <input type="number" id="arrival-time" required />
+
+            <label for="priority">Priority (0-10):</label>
+            <input type="number" id="priority" min="0" max="10" required />
+
+            <br>
+            <button type="submit">Add Process</button>
+            <br>
+        </form>
+
+        <table id="process-table">
+            <thead>
+                <tr>
+                    <th>Process Name</th>
+                    <th>Burst Time</th>
+                    <th>Arrival Time</th>
+                    <th>Priority</th>
+                    <th>Finish Time</th>
+                    <th>Turnaround Time</th>
+                    <th>Waiting Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Process rows will be dynamically added here -->
+            </tbody>
+        </table>
+
+        <div id="statistics">
+            <p>Average Turnaround Time: <span id="avg-turnaround-time">0</span> ms</p>
+            <p>Average Waiting Time: <span id="avg-waiting-time">0</span> ms</p>
+        </div>
+
+        <div id="gantt-chart">
+            <!-- Gantt chart will be dynamically generated here -->
+        </div>
+    </div>
+
+    <script src="./priority.js"></script>
+</body>
+
+</html>
