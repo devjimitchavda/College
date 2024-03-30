@@ -8,9 +8,9 @@ network_info() {
     echo "Hostname:"
     hostname
     echo "IP Address:"
-    hostname -I
+    ip addr show | awk '/inet /{print $2}'
     echo "Network Interfaces:"
-    ifconfig -a | grep -o '^[a-zA-Z0-9]*'
+    ip link show | awk -F': ' '$0 !~ "lo|vir|^[^0-9]"{print $2}'
 }
 
 # Main script
